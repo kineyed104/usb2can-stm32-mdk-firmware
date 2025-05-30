@@ -1,4 +1,4 @@
-﻿/*----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------
  *      R T L  -  C A N   D r i v e r
  *----------------------------------------------------------------------------
  *      Name:    CAN_Hw.c
@@ -80,7 +80,7 @@ static CAN_ERROR CAN_hw_set_baudrate (U32 ctrl, U32 baudrate)  {
     /* so that sample point is at about 72% bit time from bit start          */
     if (baudrate <= 10000) {
         /* TSEG1 = 3, TSEG2 = 2, SJW = 4 => 1 CAN bit = 18 TQ, sample at 72%    */
-        CAN_set_timing(3, 2, 4, brp*3);
+        CAN_set_timing(12, 5, 1, brp);
     }
     else {
         /* TSEG1 = 12, TSEG2 = 5, SJW = 4 => 1 CAN bit = 18 TQ, sample at 72%    */
