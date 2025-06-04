@@ -23,7 +23,7 @@
 #define CAN_INIT_INDEX		0
 #define	CAN_INIT_ABOM		FALSE
 #define CAN_INIT_ART		FALSE
-#define CAN_INIT_VER		1
+#define CAN_INIT_VER		2
 
 /* CHANNEL */
 #define CAN_CONFIG_CHANNEL	0xff					//CAN配置使用0xff通道

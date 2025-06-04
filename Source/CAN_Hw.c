@@ -67,37 +67,49 @@ static void CAN_set_timing(U32 tseg1, U32 tseg2, U32 sjw, U32 brp) {
  *  Return:     CAN_ERROR:  Error code
  *---------------------------------------------------------------------------*/
 
-static CAN_ERROR CAN_hw_set_baudrate (U32 ctrl, U32 baudrate)  {
-  U32 brp = 36000000;
+static CAN_ERROR CAN_hw_set_baudrate (U32 ctrl, U32 baudrate) {
+    U32 brp, tseg1, tseg2, sjw, tq;
+    sjw = 2;  // 모든 속도에서 고정
 
-  /* Note: this calculations fit for PCLK1 = 36MHz */
-  /* Determine which nominal time to use for requested baudrate and set
-     appropriate bit timing                                                  */
-  if (baudrate <= 500000)  {
-    brp  = (brp / 18) / baudrate;
-
-    /* Load the baudrate registers BTR                                       */
-    /* so that sample point is at about 72% bit time from bit start          */
-    if (baudrate <= 10000) {
-        /* TSEG1 = 3, TSEG2 = 2, SJW = 4 => 1 CAN bit = 18 TQ, sample at 72%    */
-        CAN_set_timing(12, 5, 1, brp);
+    if (baudrate <= 5000) {
+        tq = 24;  tseg1 = 16; tseg2 = 7;
+    }
+    else if (baudrate <= 10000) {
+        tq = 20;  tseg1 = 13; tseg2 = 6;
+    }
+    else if (baudrate <= 20000) {
+        tq = 20;  tseg1 = 13; tseg2 = 6;
+    }
+    else if (baudrate <= 50000) {
+        tq = 20;  tseg1 = 13; tseg2 = 6;
+    }
+    else if (baudrate <= 100000) {
+        tq = 16;  tseg1 = 11; tseg2 = 4;
+    }
+    else if (baudrate <= 125000) {
+        tq = 16;  tseg1 = 11; tseg2 = 4;
+    }
+    else if (baudrate <= 250000) {
+        tq = 12;  tseg1 = 8;  tseg2 = 3;
+    }
+    else if (baudrate <= 500000) {
+        tq = 12;  tseg1 = 8;  tseg2 = 3;
+    }
+    else if (baudrate <= 1000000) {
+        tq = 9;  tseg1 = 5;  tseg2 = 3;
     }
     else {
-        /* TSEG1 = 12, TSEG2 = 5, SJW = 4 => 1 CAN bit = 18 TQ, sample at 72%    */
-        CAN_set_timing(12, 5, 4, brp);
+        return CAN_BAUDRATE_ERROR;
     }
-  }  else if (baudrate <= 1000000)  {
-    brp  = (brp / 9) / baudrate;
-                                                                          
-    /* Load the baudrate registers BTR                                       */
-    /* so that sample point is at about 72% bit time from bit start          */
-    /* TSEG1 = 5, TSEG2 = 3, SJW = 3 => 1 CAN bit = 9 TQ, sample at 66%    */
-    CAN_set_timing( 5, 3, 3, brp);
-  }  else  {
-    return CAN_BAUDRATE_ERROR;
-  }  
 
-  return CAN_OK;
+    // BRP 계산
+    brp = 36000000 / (baudrate * tq);
+    if (brp == 0 || brp > 1024)
+        return CAN_BAUDRATE_ERROR;
+
+    // 타이밍 적용
+    CAN_set_timing(tseg1, tseg2, sjw, brp);
+    return CAN_OK;
 }
 
 
