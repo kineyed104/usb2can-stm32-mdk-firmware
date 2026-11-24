@@ -46,7 +46,7 @@
 .vs/
 
 # Kernel Module Compile Results
-/Project/Obj/
+Obj/
 *.mod*
 *.cmd
 .tmp_versions/
